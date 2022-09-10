@@ -42,53 +42,57 @@ public class QueryBuilder {
 
     public QueryBuilder insertRow(Object entry)  { // Evan
     	
-    	sql.append("INSERT INTO " + tableName);
     	Field[] fields = entry.getClass().getDeclaredFields();
-    	List<String> params = new ArrayList<String>();
     	Method[] methods = entry.getClass().getDeclaredMethods();
-    	List<String> values = new ArrayList<String>();
-    	int i = 0;
-    
+
+    	Map<Integer, String> fieldAnnoMap = new HashMap<Integer, String>();
+    	Map<Integer, String> methodAnnoMap = new HashMap<Integer, String>();
+    	
+    	sql.append("INSERT INTO " + tableName);
     	if (fields.length > 0) {
     		
     		sql.append(" (");
     		for (Field field:fields) {
-    			if (field.isAnnotationPresent(NonId.class))
-    				params.add(field.getName());
-				}
-    		for (String param:params) {
-    			sql.append(param);
-    			if (i < params.size() - 1) {
-    				sql.append(", ");
-    		}
-    			i++;
-    		}
-        	
-    		sql.append(") values (");
-    		i = 0;
+    			if (field.isAnnotationPresent(NonId.class)) {
+    				//params.add(field.getName());
+    				NonId anno = field.getAnnotation(NonId.class);
+    				int paramKey = anno.column();
+    				String paramValue = field.getName();
+    				fieldAnnoMap.put(paramKey, paramValue);
+    			}	
+			}
     		for (Method method:methods) {
     			if (method.isAnnotationPresent(NonIdGetter.class))
     				try{
     					Object obj = method.invoke(entry);
-    					values.add(obj.toString());
+    					NonIdGetter anno = method.getAnnotation(NonIdGetter.class);
+    					//values.add(obj.toString());
+    					int paramKey = anno.column();
+        				String paramValue = obj.toString();
+        				methodAnnoMap.put(paramKey, paramValue);
+    					
     				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e){
     					e.printStackTrace();
     				}
 				}
-    		for (String value:values) {
-    			sql.append(value);
-    			if (i < values.size() - 1) {
+    		
+    		for (int i = 1; i <= fieldAnnoMap.size(); i++) {
+    			sql.append(fieldAnnoMap.get(i));
+    			if (i < fieldAnnoMap.size()) {
     				sql.append(", ");
+    			}
     		}
-    			i++;
+    		sql.append(") VALUES (");
+    		
+    		for (int i = 1; i <= methodAnnoMap.size(); i++) {
+    			sql.append(methodAnnoMap.get(i));
+    			if (i < methodAnnoMap.size()) {
+    				sql.append(", ");
+    			}
     		}
     		sql.append(");");
     	}
     	return this;
-    	
-    	// do not return userId field with the use of annotations
-    	// do not invoke getter for userId
-    	
     }
 
     public String viewSQL() {

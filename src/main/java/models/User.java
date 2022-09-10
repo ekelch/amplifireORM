@@ -11,13 +11,13 @@ public class User {
 	@GeneratedId
 	private long userId;
 	
-	@NonId
+	@NonId(column=1)
 	private String username;
 	
-	@NonId
+	@NonId(column=2)
 	private String password;
 	
-	@NonId
+	@NonId(column=3)
 	private String email;
 	
 	
@@ -42,7 +42,7 @@ public class User {
 		this.userId = userId;
 	}
 
-	@NonIdGetter
+	@NonIdGetter(column = 1)
 	public String getUsername() {
 		return username;
 	}
@@ -51,7 +51,7 @@ public class User {
 		this.username = username;
 	}
 	
-	@NonIdGetter
+	@NonIdGetter(column = 2)
 	public String getPassword() {
 		return password;
 	}
@@ -60,7 +60,7 @@ public class User {
 		this.password = password;
 	}
 
-	@NonIdGetter
+	@NonIdGetter(column = 3)
 	public String getEmail() {
 		return email;
 	}
