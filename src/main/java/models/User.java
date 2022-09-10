@@ -2,11 +2,22 @@ package models;
 
 import java.util.Objects;
 
-public class User {
+import annotations.GeneratedId;
+import annotations.NonId;
+import annotations.NonIdGetter;
 
+public class User {
+	
+	@GeneratedId
 	private long userId;
+	
+	@NonId
 	private String username;
+	
+	@NonId
 	private String password;
+	
+	@NonId
 	private String email;
 	
 	
@@ -31,6 +42,7 @@ public class User {
 		this.userId = userId;
 	}
 
+	@NonIdGetter
 	public String getUsername() {
 		return username;
 	}
@@ -38,7 +50,8 @@ public class User {
 	public void setUsername(String username) {
 		this.username = username;
 	}
-
+	
+	@NonIdGetter
 	public String getPassword() {
 		return password;
 	}
@@ -47,6 +60,7 @@ public class User {
 		this.password = password;
 	}
 
+	@NonIdGetter
 	public String getEmail() {
 		return email;
 	}

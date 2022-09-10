@@ -11,9 +11,9 @@ public class Driver {
 		User user = new User(1, "ekelch", "pass", "email");
 		QueryBuilder query = new QueryBuilder(connection, "users");
 		
-		String result = query.getColumns("*").fromTable().viewSQL();
+		//String result = query.getColumns("*").fromTable().viewSQL();
 		
-		//String result = query.insertRow(user).viewSQL();
+		String result = query.insertRow(user).viewSQL();
 		
 		System.out.println(result);
 		
