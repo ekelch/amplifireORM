@@ -1,14 +1,12 @@
 package models;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +21,7 @@ public class QueryBuilder {
     private String tableName;
     Connection connection;
 
-    public QueryBuilder(Connection connection, String tableName) throws SQLException {
-    	this.connection = connection;
+    public QueryBuilder(String tableName) throws SQLException {
         this.tableName = tableName;
         sql = new StringBuffer("");
     }
@@ -41,55 +38,33 @@ public class QueryBuilder {
     }
 
     public QueryBuilder insertRow(Object entry)  { // Evan
-    	
-    	Field[] fields = entry.getClass().getDeclaredFields();
-    	Method[] methods = entry.getClass().getDeclaredMethods();
-
-    	Map<Integer, String> fieldAnnoMap = new HashMap<Integer, String>();
-    	Map<Integer, String> methodAnnoMap = new HashMap<Integer, String>();
+ 
+    	Map<Integer, String> fieldAnnoMap = GetAnnoMap.getNonIdFields(entry);
+    	Map<Integer, String> methodAnnoMap = GetAnnoMap.getNonIdGetters(entry);
     	
     	sql.append("INSERT INTO " + tableName);
-    	if (fields.length > 0) {
+    	if (fieldAnnoMap.size() > 0) {
     		
     		sql.append(" (");
-    		for (Field field:fields) {
-    			if (field.isAnnotationPresent(NonId.class)) {
-    				//params.add(field.getName());
-    				NonId anno = field.getAnnotation(NonId.class);
-    				int paramKey = anno.column();
-    				String paramValue = field.getName();
-    				fieldAnnoMap.put(paramKey, paramValue);
-    			}	
-			}
-    		for (Method method:methods) {
-    			if (method.isAnnotationPresent(NonIdGetter.class))
-    				try{
-    					Object obj = method.invoke(entry);
-    					NonIdGetter anno = method.getAnnotation(NonIdGetter.class);
-    					//values.add(obj.toString());
-    					int paramKey = anno.column();
-        				String paramValue = obj.toString();
-        				methodAnnoMap.put(paramKey, paramValue);
-    					
-    				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e){
-    					e.printStackTrace();
-    				}
-				}
     		
-    		for (int i = 1; i <= fieldAnnoMap.size(); i++) {
-    			sql.append(fieldAnnoMap.get(i));
-    			if (i < fieldAnnoMap.size()) {
-    				sql.append(", ");
-    			}
+    		List<Integer> keyList = new ArrayList<Integer>();
+    		fieldAnnoMap.forEach((key, value) -> {keyList.add(key);});
+    		Collections.sort(keyList);
+    		
+    		for (int key:keyList) {
+    			sql.append(fieldAnnoMap.get(key) + ", ");
     		}
+    		sql.reverse();
+    		sql.delete(0,2);
+    		sql.reverse();
     		sql.append(") VALUES (");
     		
-    		for (int i = 1; i <= methodAnnoMap.size(); i++) {
-    			sql.append(methodAnnoMap.get(i));
-    			if (i < methodAnnoMap.size()) {
-    				sql.append(", ");
-    			}
+    		for (int key:keyList) {
+    			sql.append(methodAnnoMap.get(key) + ", ");
     		}
+    		sql.reverse();
+    		sql.delete(0,2);
+    		sql.reverse();
     		sql.append(");");
     	}
     	return this;
@@ -98,16 +73,7 @@ public class QueryBuilder {
     public String viewSQL() {
         return sql.toString();
     }
-
-    public void executeQuery() {
-        try(Statement statement = connection.createStatement();)
-        
-        {
-            ResultSet set = statement.executeQuery(sql.toString());
-        } catch(SQLException e) {
-
-        }
-
-    }
-
+ 
+    
+    
 }

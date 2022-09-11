@@ -3,21 +3,22 @@ package models;
 import java.util.Objects;
 
 import annotations.GeneratedId;
+import annotations.GeneratedIdSetter;
 import annotations.NonId;
 import annotations.NonIdGetter;
 
 public class User {
 	
-	@GeneratedId
+	@GeneratedId(column=1)
 	private long userId;
 	
-	@NonId(column=1)
+	@NonId(column=2)
 	private String username;
 	
-	@NonId(column=2)
+	@NonId(column=3)
 	private String password;
 	
-	@NonId(column=3)
+	@NonId(column=4)
 	private String email;
 	
 	
@@ -30,19 +31,16 @@ public class User {
 	}
 
 	
-	
-
-	
-	
 	public long getUserId() {
 		return userId;
 	}
-
+	
+	@GeneratedIdSetter(column=1)
 	public void setUserId(long userId) {
 		this.userId = userId;
 	}
 
-	@NonIdGetter(column = 1)
+	@NonIdGetter(column=2)
 	public String getUsername() {
 		return username;
 	}
@@ -51,7 +49,7 @@ public class User {
 		this.username = username;
 	}
 	
-	@NonIdGetter(column = 2)
+	@NonIdGetter(column=3)
 	public String getPassword() {
 		return password;
 	}
@@ -60,7 +58,7 @@ public class User {
 		this.password = password;
 	}
 
-	@NonIdGetter(column = 3)
+	@NonIdGetter(column=4)
 	public String getEmail() {
 		return email;
 	}
