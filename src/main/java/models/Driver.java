@@ -11,15 +11,14 @@ public class Driver {
 		
 		Connection connection = ConnectionFactory.getConnection();
 		ExecutorService exec = new ExecutorService(connection);
-		User user = new User(1, "papa", "test", "bestemail");
+		User user = new User(1, "insert", "test", "good");
 		QueryBuilder query = new QueryBuilder("users");
-		
-		//String result = query.getColumns("*").fromTable().viewSQL();
 		
 		String insertQuery = query.insertRow(user).viewSQL();
 		
-		exec.insert(user, insertQuery);
-		//System.out.println(result);
+		Object newUser = exec.insert(user, insertQuery);
+		
+		System.out.println(newUser);
 	}
 
 }

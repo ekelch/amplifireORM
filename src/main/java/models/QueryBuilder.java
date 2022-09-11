@@ -44,16 +44,21 @@ public class QueryBuilder {
     		fieldAnnoMap.forEach((key, value) -> {keyList.add(key);});
     		Collections.sort(keyList);
     		
-    		for (int key:keyList) {
+    		for (int key:keyList)
     			sql.append(fieldAnnoMap.get(key) + ", ");
-    		}
+    
     		sql.reverse();
     		sql.delete(0,2);
     		sql.reverse();
     		sql.append(") VALUES (");
     		
     		for (int key:keyList) {
-    			sql.append(methodAnnoMap.get(key) + ", ");
+    			if (fieldAnnoMap.get(key).getClass().getTypeName().equals("java.lang.String"))
+    				sql.append("'");
+    			sql.append(methodAnnoMap.get(key));
+    			if (fieldAnnoMap.get(key).getClass().getTypeName().equals("java.lang.String"))
+    				sql.append("'");
+    			sql.append(", ");
     		}
     		sql.reverse();
     		sql.delete(0,2);

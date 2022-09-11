@@ -32,16 +32,12 @@ public class ExecutorService {
 		Map<Integer, Method> nonIdGetterMethods = GetAnnoMap.getNonIdGetterMethods(entry);
 
 		try {
-			PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS); 
-			System.out.println(sql); // must add data types!
+			PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			int affectedRows = statement.executeUpdate();
-			System.out.println("2");
 			if (affectedRows > 0) {
 				try (ResultSet set = statement.getGeneratedKeys()){
 					if (set.next()) {
-						System.out.println("trying to get pk");
 						pk = set.getInt(1);
-						System.out.println("got pk");
 					}
 				} catch (SQLException | IllegalArgumentException e) {
 					e.getMessage();
