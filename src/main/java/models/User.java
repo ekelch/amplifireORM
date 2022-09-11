@@ -6,6 +6,7 @@ import annotations.GeneratedId;
 import annotations.GeneratedIdSetter;
 import annotations.NonId;
 import annotations.NonIdGetter;
+import annotations.NonIdSetter;
 
 public class User {
 	
@@ -29,8 +30,16 @@ public class User {
 		this.password = password;
 		this.email = email;
 	}
+	
+	
 
 	
+	public User() {
+	}
+
+
+
+
 	public long getUserId() {
 		return userId;
 	}
@@ -44,7 +53,7 @@ public class User {
 	public String getUsername() {
 		return username;
 	}
-
+	@NonIdSetter(column=2)
 	public void setUsername(String username) {
 		this.username = username;
 	}
@@ -54,6 +63,7 @@ public class User {
 		return password;
 	}
 
+	@NonIdSetter(column=3)
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -63,6 +73,7 @@ public class User {
 		return email;
 	}
 
+	@NonIdSetter(column=4)
 	public void setEmail(String email) {
 		this.email = email;
 	}

@@ -1,6 +1,6 @@
 package statements;
 
-import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,9 +8,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
-import annotations.NonIdGetter;
+import models.GetAnnoMap;
+import models.getLists;
 
 public class ExecutorService {
 
@@ -22,35 +25,25 @@ public class ExecutorService {
 	}
 
 	public Object insert(Object entry, String sql) {
-		Object out = null;
-		int pk;
-		Method[] methods = entry.getClass().getDeclaredMethods();
-		List<Method> getters = new ArrayList<Method>();
-		for (Method method:methods) {
-			if (method.isAnnotationPresent(NonIdGetter.class)) {
-				getters.add(method);
-			}
-		}
-		
-		
+		Object output = entry;
+		int pk = -1;
+		List<Method> idSetters = getLists.getIdSetters(entry);
+		Map<Integer, Method> nonIdSetterMethods = GetAnnoMap.getNonIdSetterMethods(entry);
+		Map<Integer, Method> nonIdGetterMethods = GetAnnoMap.getNonIdGetterMethods(entry);
+
 		try {
-			Constructor<? extends Object> construct = entry.getClass().getConstructor(entry.getClass());
-			out = construct.newInstance(null);
-		} catch (NoSuchMethodException | SecurityException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-		try {	
 			PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS); 
+			System.out.println(sql); // must add data types!
 			int affectedRows = statement.executeUpdate();
-			
+			System.out.println("2");
 			if (affectedRows > 0) {
 				try (ResultSet set = statement.getGeneratedKeys()){
 					if (set.next()) {
+						System.out.println("trying to get pk");
 						pk = set.getInt(1);
+						System.out.println("got pk");
 					}
-				} catch (SQLException e) {
+				} catch (SQLException | IllegalArgumentException e) {
 					e.getMessage();
 				}
 			}
@@ -58,10 +51,30 @@ public class ExecutorService {
 			// TODO Auto-generated catch block
 			e.getMessage();
 		}
+		
+		try {
+			if (pk != -1)
+			for (Method setter:idSetters) {
+				setter.invoke(output, pk);
+			}
+			
+			List<Integer> keyList = new ArrayList<Integer>();
+    		nonIdSetterMethods.forEach((key, value) -> {keyList.add(key);});
+    		Collections.sort(keyList);
+    		
+    		for (int key:keyList) {
+    			Method setter = nonIdSetterMethods.get(key);
+    			String value = nonIdGetterMethods.get(key).invoke(entry).toString();
+    			setter.invoke(output, value);
+    		}
+		
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			
+		}
 
 		
 		
-		return user;
+		return output;
 	}
 	
 	
