@@ -11,16 +11,22 @@ public class Driver {
 		
 		Connection connection = ConnectionFactory.getConnection();
 		ExecutorService exec = new ExecutorService(connection);
-		User user = new User(1, "stringy", "tsts", "goodtsst");
 		QueryBuilder queryBuilder = new QueryBuilder();
 		
-		//Object newUser = exec.insert(user, queryBuilder.insertRow(user));
-		//System.out.println(newUser.getClass());
+//		Route insertRoute = new Route("Not a Real Route5", 1, "13b", 1000);
+//		String insertQuery = queryBuilder.insert(insertRoute, "routes");
+//		Object newRoute = exec.insert(insertRoute, insertQuery);
+//		//System.out.println(newUser.getClass());
+//		
+		String getQuery = queryBuilder.getColumns("difficulty").fromTable("routes").end();
+//		
+//		String query = queryBuilder.getColumns("*").fromTable("users").whereEquals("username", "ekelch").end();
+//		
+		System.out.println("get request: " + exec.getColumn(Route.class, getQuery));
 		
-		String query = queryBuilder.getColumns("*").fromTable("routes").whereEquals("name", "Quinsana Plus").end();
-		
-		System.out.println(query);
-		System.out.println(exec.get(Route.class, query));
+//		Map<Integer, String> fieldNames = GetAnnoMap.getAllFieldNames(insertRoute);
+//		System.out.println(insertRoute);
+//		System.out.println(fieldNames);
 		
 	}
 

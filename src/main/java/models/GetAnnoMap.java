@@ -3,9 +3,9 @@ package models;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import annotations.GeneratedId;
 import annotations.GeneratedIdSetter;
@@ -18,7 +18,7 @@ public class GetAnnoMap {
 	
 	public static Map<Integer, String> getNonIdFields(Object entry) {
 		List<Field> nonIdFields = getLists.getNonIdFields(entry);
-		Map<Integer, String> fieldAnnoMap = new HashMap<Integer, String>();
+		Map<Integer, String> fieldAnnoMap = new TreeMap<Integer, String>();
 		
 		for (Field field:nonIdFields) {
 			NonId anno = field.getAnnotation(NonId.class);
@@ -31,7 +31,7 @@ public class GetAnnoMap {
 	
 	public static Map<Integer, String> getIdFields(Object entry) {
 		List<Field> idFields = getLists.getGeneratedIds(entry);
-		Map<Integer, String> fieldAnnoMap = new HashMap<Integer, String>();
+		Map<Integer, String> fieldAnnoMap = new TreeMap<Integer, String>();
 		
 		for (Field field:idFields) {
 			GeneratedId anno = field.getAnnotation(GeneratedId.class);
@@ -42,9 +42,30 @@ public class GetAnnoMap {
 		return fieldAnnoMap;
 	}
 	
+	public static Map<Integer, String> getAllFieldNames(Object entry) {
+		List<Field> idFields = getLists.getAllFields(entry);
+		Map<Integer, String> fieldAnnoMap = new TreeMap<Integer, String>();
+		
+		for (Field field:idFields) {
+			if (field.isAnnotationPresent(GeneratedId.class)) {
+				GeneratedId anno = field.getAnnotation(GeneratedId.class);
+				int paramKey = anno.column();
+				String paramValue = field.getName();
+				fieldAnnoMap.put(paramKey, paramValue);
+			}
+			if (field.isAnnotationPresent(NonId.class)) {
+				NonId anno = field.getAnnotation(NonId.class);
+				int paramKey = anno.column();
+				String paramValue = field.getName();
+				fieldAnnoMap.put(paramKey, paramValue);
+			}
+		}
+		return fieldAnnoMap;
+	}
+	
 	public static Map<Integer, String> getFieldTypes(Object entry) {
 		List<Field> idFields = getLists.getAllFields(entry);
-		Map<Integer, String> fieldAnnoMap = new HashMap<Integer, String>();
+		Map<Integer, String> fieldAnnoMap = new TreeMap<Integer, String>();
 		
 		for (Field field:idFields) {
 			if (field.isAnnotationPresent(GeneratedId.class)) {
@@ -65,7 +86,7 @@ public class GetAnnoMap {
 	
 	public static Map<Integer, String> getNonIdGetters(Object entry) {
 		List<Method> getters = getLists.getNonIdGetters(entry);
-		Map<Integer, String> methodAnnoMap = new HashMap<Integer, String>();
+		Map<Integer, String> methodAnnoMap = new TreeMap<Integer, String>();
 		
 		for (Method getter:getters) {
 			try{
@@ -84,7 +105,7 @@ public class GetAnnoMap {
 	
 	public static Map<Integer, Method> getIdSetterMethods(Object entry) {
 		Method[] methods = entry.getClass().getDeclaredMethods();
-		Map<Integer, Method> methodAnnoMap = new HashMap<Integer, Method>();
+		Map<Integer, Method> methodAnnoMap = new TreeMap<Integer, Method>();
 		
 		for (Method method:methods) {
 			if (method.isAnnotationPresent(GeneratedIdSetter.class))
@@ -102,7 +123,7 @@ public class GetAnnoMap {
 	
 	public static Map<Integer, Method> getAllSetterMethods(Object entry) {
 		Method[] methods = entry.getClass().getDeclaredMethods();
-		Map<Integer, Method> methodAnnoMap = new HashMap<Integer, Method>();
+		Map<Integer, Method> methodAnnoMap = new TreeMap<Integer, Method>();
 		
 		for (Method method:methods) {
 			if (method.isAnnotationPresent(GeneratedIdSetter.class)) {
@@ -132,7 +153,7 @@ public class GetAnnoMap {
 	
 	public static Map<Integer, Method> getNonIdSetterMethods(Object entry) {
 		Method[] methods = entry.getClass().getDeclaredMethods();
-		Map<Integer, Method> methodAnnoMap = new HashMap<Integer, Method>();
+		Map<Integer, Method> methodAnnoMap = new TreeMap<Integer, Method>();
 		
 		for (Method method:methods) {
 			if (method.isAnnotationPresent(NonIdSetter.class))
@@ -150,7 +171,7 @@ public class GetAnnoMap {
 	
 	public static Map<Integer, Method> getNonIdGetterMethods(Object entry) {
 		Method[] methods = entry.getClass().getDeclaredMethods();
-		Map<Integer, Method> methodAnnoMap = new HashMap<Integer, Method>();
+		Map<Integer, Method> methodAnnoMap = new TreeMap<Integer, Method>();
 		
 		for (Method method:methods) {
 			if (method.isAnnotationPresent(NonIdGetter.class))

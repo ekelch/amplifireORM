@@ -14,10 +14,10 @@ public class Route {
 	private long routeId;
 	
 	@NonId(column=2)
-	private String routeName;
+	private String name;
 	
 	@NonId(column=3)
-	private int location;
+	private int location_id;
 	
 	@NonId(column=4)
 	private String difficulty;
@@ -30,6 +30,18 @@ public class Route {
 		super();
 	}
 
+	
+
+	public Route(String routeName, int location, String difficulty, int length) {
+		super();
+		this.name = routeName;
+		this.location_id = location;
+		this.difficulty = difficulty;
+		this.length = length;
+	}
+
+
+
 	public long getRouteId() {
 		return routeId;
 	}
@@ -41,22 +53,22 @@ public class Route {
 
 	@NonIdGetter(column=2)
 	public String getRouteName() {
-		return routeName;
+		return name;
 	}
 
 	@NonIdSetter(column=2)
 	public void setRouteName(String routeName) {
-		this.routeName = routeName;
+		this.name = routeName;
 	}
 
 	@NonIdGetter(column=3)
 	public int getLocation() {
-		return location;
+		return location_id;
 	}
 
 	@NonIdSetter(column=3)
 	public void setLocation(int location) {
-		this.location = location;
+		this.location_id = location;
 	}
 
 	@NonIdGetter(column=4)
@@ -81,7 +93,7 @@ public class Route {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(difficulty, length, location, routeId, routeName);
+		return Objects.hash(difficulty, length, location_id, routeId, name);
 	}
 
 	@Override
@@ -93,13 +105,13 @@ public class Route {
 		if (getClass() != obj.getClass())
 			return false;
 		Route other = (Route) obj;
-		return Objects.equals(difficulty, other.difficulty) && length == other.length && location == other.location
-				&& routeId == other.routeId && Objects.equals(routeName, other.routeName);
+		return Objects.equals(difficulty, other.difficulty) && length == other.length && location_id == other.location_id
+				&& routeId == other.routeId && Objects.equals(name, other.name);
 	}
 
 	@Override
 	public String toString() {
-		return "Route [routeId=" + routeId + ", routeName=" + routeName + ", location=" + location + ", difficulty="
+		return "Route [routeId=" + routeId + ", routeName=" + name + ", location=" + location_id + ", difficulty="
 				+ difficulty + ", length=" + length + "]";
 	}
 	

@@ -1,6 +1,5 @@
 package services;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -29,8 +28,6 @@ public class ExecutorService {
 		Object output = entry;
 		int pk = -1;
 		List<Method> idSetters = getLists.getIdSetters(entry);
-		Map<Integer, Method> nonIdSetterMethods = GetAnnoMap.getNonIdSetterMethods(entry);
-		Map<Integer, Method> nonIdGetterMethods = GetAnnoMap.getNonIdGetterMethods(entry);
 
 		try {
 			PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -54,17 +51,6 @@ public class ExecutorService {
 			for (Method setter:idSetters) {
 				setter.invoke(output, pk);
 			}
-			
-			List<Integer> keyList = new ArrayList<Integer>();
-    		nonIdSetterMethods.forEach((key, value) -> {keyList.add(key);});
-    		Collections.sort(keyList);
-    		
-    		for (int key:keyList) {
-    			Method setter = nonIdSetterMethods.get(key);
-    			String value = nonIdGetterMethods.get(key).invoke(entry).toString();
-    			setter.invoke(output, value);
-    		}
-		
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
@@ -74,19 +60,12 @@ public class ExecutorService {
 		return output;
 	}
 	
-	public Object get(Class<?> clazz, String sql) {
-		Object output = null;
+	public Object getRow(Class<?> clazz, String sql) {
 		
-		try {
-		Constructor<?> construct = clazz.getConstructor();
-		output = construct.newInstance();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		Object instance = Instantiater.construct(clazz);
 		
-		Map<Integer, Method> setterAnnoMap = GetAnnoMap.getAllSetterMethods(output);
-		Map<Integer, String> allFields = GetAnnoMap.getFieldTypes(output);
-		System.out.println(allFields);
+		Map<Integer, Method> setterAnnoMap = GetAnnoMap.getAllSetterMethods(instance);
+		Map<Integer, String> allFields = GetAnnoMap.getFieldTypes(instance);
 		
 		List<Integer> keyList = new ArrayList<Integer>();
 		setterAnnoMap.forEach((key, value) -> {keyList.add(key);});
@@ -100,11 +79,11 @@ public class ExecutorService {
 				for (int key:keyList) {
 					Method setter = setterAnnoMap.get(key);
 					if (allFields.get(key).equals("long"))
-						setter.invoke(output, set.getLong(key));
+						setter.invoke(instance, set.getLong(key));
 					if (allFields.get(key).equals("class java.lang.String"))
-						setter.invoke(output, set.getString(key));
+						setter.invoke(instance, set.getString(key));
 					if (allFields.get(key).equals("int"))
-						setter.invoke(output, set.getInt(key));
+						setter.invoke(instance, set.getInt(key));
 				}
 			}
 			
@@ -112,7 +91,33 @@ public class ExecutorService {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		return output;
+		return instance;
+	}
+	
+	public List<Object> getColumn(Class<?> clazz, String sql){
+		
+		String[] arr = sql.split(" "); 	// get column name
+		String column = arr[1];			// assuming it is always immediately after SELECT
+		Object obj = Instantiater.construct(clazz);
+		
+		Map<Integer, String> fieldTypes = GetAnnoMap.getFieldTypes(obj);
+		List<Integer> keyList = new ArrayList<Integer>();
+		fieldTypes.forEach((key, value) -> {keyList.add(key);});
+		
+		List<Object> columnList = new ArrayList<Object>();
+		
+		try {
+			PreparedStatement statement = connection.prepareStatement(sql);
+			ResultSet set = statement.executeQuery();
+			
+			while (set.next())
+				columnList.add(set.getString(column));
+//			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return columnList;
 	}
 	
 	

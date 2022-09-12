@@ -3,7 +3,6 @@ package models;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +10,6 @@ import java.util.Map;
 public class QueryBuilder {
 
     protected StringBuffer sql;
-    private String tableName;
     Connection connection;
 
     public QueryBuilder() throws SQLException {
@@ -41,7 +39,7 @@ public class QueryBuilder {
         return this;
     }
 
-    public String insertRow(Object entry)  { // Evan
+    public String insert(Object entry, String tableName)  { // Evan
  
     	Map<Integer, String> fieldAnnoMap = GetAnnoMap.getNonIdFields(entry);
     	Map<Integer, String> methodAnnoMap = GetAnnoMap.getNonIdGetters(entry);
@@ -53,7 +51,6 @@ public class QueryBuilder {
     		
     		List<Integer> keyList = new ArrayList<Integer>();
     		fieldAnnoMap.forEach((key, value) -> {keyList.add(key);});
-    		Collections.sort(keyList);
     		
     		for (int key:keyList)
     			sql.append(fieldAnnoMap.get(key) + ", ");

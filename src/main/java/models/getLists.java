@@ -44,6 +44,15 @@ public class getLists {
 		return allFields;
 	}
 	
+	public static List<String> getAllFieldNames(Object entry) {
+		Field[] fields = entry.getClass().getDeclaredFields();
+		List<String> allFields = new ArrayList<String>();
+		for (Field field:fields) {
+			allFields.add(field.getName());
+		}
+		return allFields;
+	}
+	
 	public static List<Method> getNonIdGetters(Object entry) {
 		Method[] methods = entry.getClass().getDeclaredMethods();
 		List<Method> getters = new ArrayList<Method>();
