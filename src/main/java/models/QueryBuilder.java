@@ -21,6 +21,26 @@ public class QueryBuilder {
         sql.append("SELECT " + columns);
         return this;
     }
+    
+    public QueryBuilder deleteFrom(String tableName){
+        sql.append("DELETE FROM " + tableName);
+        return this;
+    }
+    
+    public QueryBuilder update(String tableName){
+        sql.append("UPDATE " + tableName);
+        return this;
+    }
+    
+    public QueryBuilder setColumnValue(String column, String value){
+    	if (value.matches("\\d+")) {
+    		sql.append(" SET " + column + " = " + value);
+    	}
+    	else {
+    		sql.append(" SET " + column + " = " + "'" + value + "'");
+    	}
+        return this;
+    }
 
     public QueryBuilder fromTable(String tableName) {
         sql.append(" FROM " + tableName);

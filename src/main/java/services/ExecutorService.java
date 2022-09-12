@@ -120,5 +120,32 @@ public class ExecutorService {
 		return columnList;
 	}
 	
+	public boolean update(String sql) {
+		boolean updated = false;
+		try {
+			PreparedStatement statement = connection.prepareStatement(sql);
+			int affectedRows = statement.executeUpdate();
+			if (affectedRows > 0)
+				updated = true;
+			
+		} catch(Exception e) {
+			//e.printStackTrace();
+		}
+		return updated;
+	}
+	
+	public boolean delete(String sql) {
+		boolean deleted = false;
+		try {
+			PreparedStatement statement = connection.prepareStatement(sql);
+			int affectedRows = statement.executeUpdate();
+			if (affectedRows > 0)
+				deleted = true;
+			
+		} catch(Exception e) {
+			//e.printStackTrace();
+		}
+		return deleted;
+	}
 	
 }
