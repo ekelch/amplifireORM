@@ -42,6 +42,27 @@ public class GetAnnoMap {
 		return fieldAnnoMap;
 	}
 	
+	public static Map<Integer, String> getFieldTypes(Object entry) {
+		List<Field> idFields = getLists.getAllFields(entry);
+		Map<Integer, String> fieldAnnoMap = new HashMap<Integer, String>();
+		
+		for (Field field:idFields) {
+			if (field.isAnnotationPresent(GeneratedId.class)) {
+				GeneratedId anno = field.getAnnotation(GeneratedId.class);
+				int paramKey = anno.column();
+				String paramValue = field.getType().toString();
+				fieldAnnoMap.put(paramKey, paramValue);
+			}
+			if (field.isAnnotationPresent(NonId.class)) {
+				NonId anno = field.getAnnotation(NonId.class);
+				int paramKey = anno.column();
+				String paramValue = field.getType().toString();
+				fieldAnnoMap.put(paramKey, paramValue);
+			}
+		}
+		return fieldAnnoMap;
+	}
+	
 	public static Map<Integer, String> getNonIdGetters(Object entry) {
 		List<Method> getters = getLists.getNonIdGetters(entry);
 		Map<Integer, String> methodAnnoMap = new HashMap<Integer, String>();
@@ -61,7 +82,7 @@ public class GetAnnoMap {
 		return methodAnnoMap;
 	}
 	
-	public static Map<Integer, Method> getIdSetters(Object entry) {
+	public static Map<Integer, Method> getIdSetterMethods(Object entry) {
 		Method[] methods = entry.getClass().getDeclaredMethods();
 		Map<Integer, Method> methodAnnoMap = new HashMap<Integer, Method>();
 		
@@ -75,6 +96,36 @@ public class GetAnnoMap {
 				} catch (IllegalArgumentException e){
 					e.printStackTrace();
 				}
+		}
+		return methodAnnoMap;
+	}
+	
+	public static Map<Integer, Method> getAllSetterMethods(Object entry) {
+		Method[] methods = entry.getClass().getDeclaredMethods();
+		Map<Integer, Method> methodAnnoMap = new HashMap<Integer, Method>();
+		
+		for (Method method:methods) {
+			if (method.isAnnotationPresent(GeneratedIdSetter.class)) {
+				try{
+					GeneratedIdSetter anno = method.getAnnotation(GeneratedIdSetter.class);
+					int paramKey = anno.column();
+    				methodAnnoMap.put(paramKey, method);
+					
+				} catch (IllegalArgumentException e){
+					e.printStackTrace();
+				}
+			}
+			if (method.isAnnotationPresent(NonIdSetter.class)) {
+				try{
+					NonIdSetter anno = method.getAnnotation(NonIdSetter.class);
+					int paramKey = anno.column();
+    				methodAnnoMap.put(paramKey, method);
+					
+				} catch (IllegalArgumentException e){
+					e.printStackTrace();
+				}
+			}
+				
 		}
 		return methodAnnoMap;
 	}

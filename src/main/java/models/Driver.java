@@ -3,7 +3,7 @@ package models;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import statements.ExecutorService;
+import services.ExecutorService;
 
 public class Driver {
 
@@ -11,14 +11,17 @@ public class Driver {
 		
 		Connection connection = ConnectionFactory.getConnection();
 		ExecutorService exec = new ExecutorService(connection);
-		User user = new User(1, "insert", "test", "good");
-		QueryBuilder query = new QueryBuilder("users");
+		User user = new User(1, "stringy", "tsts", "goodtsst");
+		QueryBuilder queryBuilder = new QueryBuilder();
 		
-		String insertQuery = query.insertRow(user).viewSQL();
+		//Object newUser = exec.insert(user, queryBuilder.insertRow(user));
+		//System.out.println(newUser.getClass());
 		
-		Object newUser = exec.insert(user, insertQuery);
+		String query = queryBuilder.getColumns("*").fromTable("routes").whereEquals("name", "Quinsana Plus").end();
 		
-		System.out.println(newUser);
+		System.out.println(query);
+		System.out.println(exec.get(Route.class, query));
+		
 	}
 
 }

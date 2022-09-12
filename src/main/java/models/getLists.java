@@ -35,6 +35,15 @@ public class getLists {
 		return nonIdFields;
 	}
 	
+	public static List<Field> getAllFields(Object entry) {
+		Field[] fields = entry.getClass().getDeclaredFields();
+		List<Field> allFields = new ArrayList<Field>();
+		for (Field field:fields) {
+			allFields.add(field);
+		}
+		return allFields;
+	}
+	
 	public static List<Method> getNonIdGetters(Object entry) {
 		Method[] methods = entry.getClass().getDeclaredMethods();
 		List<Method> getters = new ArrayList<Method>();
@@ -62,6 +71,17 @@ public class getLists {
 		List<Method> setters = new ArrayList<Method>();
 		for (Method method:methods) {
 			if (method.isAnnotationPresent(GeneratedIdSetter.class)) {
+				setters.add(method);
+			}
+		}
+		return setters;
+	}
+	
+	public static List<Method> getAllSetters(Object entry) {
+		Method[] methods = entry.getClass().getDeclaredMethods();
+		List<Method> setters = new ArrayList<Method>();
+		for (Method method:methods) {
+			if (method.isAnnotationPresent(GeneratedIdSetter.class) || method.isAnnotationPresent(NonIdSetter.class)) {
 				setters.add(method);
 			}
 		}

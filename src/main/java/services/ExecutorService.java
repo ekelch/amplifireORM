@@ -1,5 +1,6 @@
-package statements;
+package services;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -40,12 +41,12 @@ public class ExecutorService {
 						pk = set.getInt(1);
 					}
 				} catch (SQLException | IllegalArgumentException e) {
-					e.getMessage();
+					e.printStackTrace();
 				}
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.getMessage();
+			e.printStackTrace();
 		}
 		
 		try {
@@ -65,7 +66,7 @@ public class ExecutorService {
     		}
 		
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			
+			e.printStackTrace();
 		}
 
 		
@@ -73,7 +74,46 @@ public class ExecutorService {
 		return output;
 	}
 	
-	
+	public Object get(Class<?> clazz, String sql) {
+		Object output = null;
+		
+		try {
+		Constructor<?> construct = clazz.getConstructor();
+		output = construct.newInstance();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		Map<Integer, Method> setterAnnoMap = GetAnnoMap.getAllSetterMethods(output);
+		Map<Integer, String> allFields = GetAnnoMap.getFieldTypes(output);
+		System.out.println(allFields);
+		
+		List<Integer> keyList = new ArrayList<Integer>();
+		setterAnnoMap.forEach((key, value) -> {keyList.add(key);});
+		Collections.sort(keyList);
+		
+		try {
+			PreparedStatement statement = connection.prepareStatement(sql);
+			
+			ResultSet set = statement.executeQuery();
+			while (set.next()) {
+				for (int key:keyList) {
+					Method setter = setterAnnoMap.get(key);
+					if (allFields.get(key).equals("long"))
+						setter.invoke(output, set.getLong(key));
+					if (allFields.get(key).equals("class java.lang.String"))
+						setter.invoke(output, set.getString(key));
+					if (allFields.get(key).equals("int"))
+						setter.invoke(output, set.getInt(key));
+				}
+			}
+			
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return output;
+	}
 	
 	
 }

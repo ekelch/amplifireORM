@@ -14,23 +14,34 @@ public class QueryBuilder {
     private String tableName;
     Connection connection;
 
-    public QueryBuilder(String tableName) throws SQLException {
-        this.tableName = tableName;
+    public QueryBuilder() throws SQLException {
         sql = new StringBuffer("");
     }
 
 
     public QueryBuilder getColumns(String columns){
-        sql.append("SELECT "+columns);
+        sql.append("SELECT " + columns);
         return this;
     }
 
-    public QueryBuilder fromTable() {
-        sql.append(" FROM "+ tableName);
+    public QueryBuilder fromTable(String tableName) {
+        sql.append(" FROM " + tableName);
+        return this;
+    }
+    
+    public QueryBuilder whereEquals(String column, String index) {
+    	
+    	if (index.matches("\\d+")) {
+    		sql.append(" WHERE " + column + " = " + index);
+    	}
+    	else {
+    		sql.append(" WHERE " + column + " = " + "'" + index + "'");
+    	}
+        
         return this;
     }
 
-    public QueryBuilder insertRow(Object entry)  { // Evan
+    public String insertRow(Object entry)  { // Evan
  
     	Map<Integer, String> fieldAnnoMap = GetAnnoMap.getNonIdFields(entry);
     	Map<Integer, String> methodAnnoMap = GetAnnoMap.getNonIdGetters(entry);
@@ -65,10 +76,10 @@ public class QueryBuilder {
     		sql.reverse();
     		sql.append(");");
     	}
-    	return this;
+    	return sql.toString();
     }
 
-    public String viewSQL() {
+    public String end() {
         return sql.toString();
     }
  
