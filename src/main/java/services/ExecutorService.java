@@ -12,9 +12,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import models.GetAnnoMap;
-import models.getLists;
-
 public class ExecutorService {
 
 	Connection connection;

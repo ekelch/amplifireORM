@@ -1,4 +1,4 @@
-package models;
+package services;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -59,7 +59,7 @@ public class QueryBuilder {
         return this;
     }
     
-public QueryBuilder andEquals(String column, String index) {
+    public QueryBuilder andEquals(String column, String index) {
     	
     	if (index.matches("\\d+")) {
     		sql.append(" AND " + column + " = " + index);
@@ -71,7 +71,7 @@ public QueryBuilder andEquals(String column, String index) {
         return this;
     }
 
-    public String insert(Object entry, String tableName)  { // Evan
+    public QueryBuilder insert(Object entry, String tableName)  { // Evan
  
     	Map<Integer, String> fieldAnnoMap = GetAnnoMap.getNonIdFields(entry);
     	Map<Integer, String> methodAnnoMap = GetAnnoMap.getNonIdGetters(entry);
@@ -105,7 +105,7 @@ public QueryBuilder andEquals(String column, String index) {
     		sql.reverse();
     		sql.append(");");
     	}
-    	return sql.toString();
+    	return this;
     }
 
     public String end() {
