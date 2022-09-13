@@ -58,6 +58,18 @@ public class QueryBuilder {
         
         return this;
     }
+    
+public QueryBuilder andEquals(String column, String index) {
+    	
+    	if (index.matches("\\d+")) {
+    		sql.append(" AND " + column + " = " + index);
+    	}
+    	else {
+    		sql.append(" AND " + column + " = " + "'" + index + "'");
+    	}
+        
+        return this;
+    }
 
     public String insert(Object entry, String tableName)  { // Evan
  
