@@ -60,12 +60,13 @@ public class ExecutorService {
 		return output;
 	}
 	
-	public Object getRow(Class<?> clazz, String sql) {
+	public List<Object> getRow(Class<?> clazz, String sql) {
 		
 		Object instance = Instantiater.construct(clazz);
+		List<Object> outputList = new ArrayList<Object>();
 		
 		Map<Integer, Method> setterAnnoMap = GetAnnoMap.getAllSetterMethods(instance);
-		Map<Integer, String> allFields = GetAnnoMap.getFieldTypes(instance);
+		Map<Integer, String> allFieldTypes = GetAnnoMap.getFieldTypes(instance);
 		
 		List<Integer> keyList = new ArrayList<Integer>();
 		setterAnnoMap.forEach((key, value) -> {keyList.add(key);});
@@ -76,14 +77,16 @@ public class ExecutorService {
 			
 			ResultSet set = statement.executeQuery();
 			while (set.next()) {
+				instance = Instantiater.construct(clazz);
 				for (int key:keyList) {
 					Method setter = setterAnnoMap.get(key);
-					if (allFields.get(key).equals("long"))
+					if (allFieldTypes.get(key).equals("long"))
 						setter.invoke(instance, set.getLong(key));
-					if (allFields.get(key).equals("class java.lang.String"))
+					if (allFieldTypes.get(key).equals("class java.lang.String"))
 						setter.invoke(instance, set.getString(key));
-					if (allFields.get(key).equals("int"))
+					if (allFieldTypes.get(key).equals("int"))
 						setter.invoke(instance, set.getInt(key));
+					outputList.add(instance);
 				}
 			}
 			
@@ -91,7 +94,7 @@ public class ExecutorService {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		return instance;
+		return outputList;
 	}
 	
 	public List<Object> getColumn(Class<?> clazz, String sql){
