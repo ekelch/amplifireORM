@@ -86,8 +86,8 @@ public class ExecutorService {
 						setter.invoke(instance, set.getString(key));
 					if (allFieldTypes.get(key).equals("int"))
 						setter.invoke(instance, set.getInt(key));
-					outputList.add(instance);
 				}
+				outputList.add(instance);
 			}
 			
 			
