@@ -33,9 +33,8 @@ public class User {
 	
 	
 	public User() {
+		this.userId = -1;
 	}
-
-
 
 
 	public long getUserId() {

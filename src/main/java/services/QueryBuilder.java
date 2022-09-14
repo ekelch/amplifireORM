@@ -71,13 +71,14 @@ public class QueryBuilder {
         return this;
     }
 
-    public QueryBuilder insert(Object entry, String tableName)  { // Evan
- 
-    	Map<Integer, String> fieldAnnoMap = GetAnnoMap.getNonIdFields(entry);
-    	Map<Integer, String> methodAnnoMap = GetAnnoMap.getNonIdGetters(entry);
+    public QueryBuilder insert(Object entry, String tableName)  { 
     	
     	sql.append("INSERT INTO " + tableName);
-    	if (fieldAnnoMap.size() > 0) {
+    	
+    	if (!entry.toString().contains("d=-1")) {
+    		
+    		Map<Integer, String> fieldAnnoMap = GetAnnoMap.getNonIdFields(entry);
+        	Map<Integer, String> methodAnnoMap = GetAnnoMap.getNonIdGetters(entry);
     		
     		sql.append(" (");
     		

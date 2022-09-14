@@ -41,7 +41,6 @@ public class Route {
 	}
 
 
-
 	public long getRouteId() {
 		return routeId;
 	}

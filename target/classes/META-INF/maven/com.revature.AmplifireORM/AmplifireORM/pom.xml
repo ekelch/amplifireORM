@@ -49,12 +49,9 @@
 			<artifactId>logback-classic</artifactId>
 			<version>1.2.9</version>
 		</dependency>
-		
-		<dependency>
-		    <groupId>com.j256.ormlite</groupId>
-		    <artifactId>ormlite-jdbc</artifactId>
-		    <version>5.0</version>
-		</dependency>
+
+        
+        
         
   </dependencies>
 
@@ -69,6 +66,11 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
             </plugin>
+            <plugin>
+			  <groupId>org.jacoco</groupId>
+			  <artifactId>jacoco-maven-plugin</artifactId>
+			  <version>0.8.9-SNAPSHOT</version>
+			</plugin>
         </plugins>
   </build>
 </project>
